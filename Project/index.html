@@ -167,7 +167,7 @@
       streamTopY = (fy + 6) - 1.0;
 
       const vx = fx;
-      const vy = bodyCenterY + bodyH + 1;
+      const vy = bodyCenterY + bodyH + 0.7;
       const vz = fz;
 
       valveHub  = S.cylinder([vx, vy, vz], [3.2, 2.2, 3.2], 'dimgray');
@@ -219,9 +219,9 @@
       streamZ = 0;
       streamTopY = (fy + 6) - 1.0;
 
-      const vy = bodyCenterY + bodyH + 1;
+      const vy = bodyCenterY + bodyH + 0.7;
 
-      valveHub.center = [fx, vy-1, 0];
+      valveHub.center = [fx, vy, 0];
       valveBar1.center = [fx, vy, 0];
       valveBar2.center = [fx, vy, 0];
       valveHitBox.center = [fx, vy, 0];
