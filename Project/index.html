@@ -44,6 +44,18 @@
     let thetaAtDragStart = 0;
     let activePointerId = null;
 
+    // --- Drain valve ---
+    let dtheta = 0;
+    const DTHETA_MIN = 0;
+    const DTHETA_MAX = 90;
+    const QoutMax = 20000;
+    let Qout = 0;
+
+    let draggingDrain = false;
+    let dDragStartClientX = 0;
+    let dthetaAtDragStart = 0;
+    let dActivePointerId = null;
+
     // --- Resize handles ---
     let handleX, handleZ, handleY;
     let draggingHandle = null;
@@ -55,12 +67,18 @@
     let faucetBody, faucetNeck, faucetSpout, stream;
     let valveBar1, valveBar2, valveHub, valveHitBox;
 
+    let drainBody, drainSpout, drainStream;
+    let drainHub, drainBar1, drainBar2, drainHitBox;
+
     let floorObj, wallX1, wallX2, wallZ1, wallZ2, waterObj;
 
     let lastMs = performance.now();
 
     function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
 
+    // ---------------------------
+    // Pool
+    // ---------------------------
     function buildPool() {
       if (floorObj) {
         floorObj.visible = false;
@@ -85,11 +103,18 @@
       const Vmax = A * (H - wallT);
 
       if (!Number.isFinite(V)) V = 0;
+
       V = clamp(V, 0, Vmax);
 
       const h = V / A;
-      const waterH = Math.max(0.1, h);
+      if (V <= 0.0001) {
+        waterObj.visible = false;
+        return;
+      }
 
+      waterObj.visible = true;
+
+      const waterH = h;
       waterObj.size = [L - 2*wallT, waterH, W - 2*wallT];
       waterObj.center = [0, wallT + waterH/2, 0];
     }
@@ -134,9 +159,8 @@
       stream = S.cylinder([fx-18, fy-23, fz], [1.2, 30, 1.2], 'deepskyblue');
       stream.visible = false;
 
-      const topOfBodyY = bodyCenterY + bodyH;
       const vx = fx;
-      const vy = topOfBodyY + 0.7;
+      const vy = bodyCenterY + bodyH + 1;
       const vz = fz;
 
       valveHub  = S.cylinder([vx, vy, vz], [3.2, 2.2, 3.2], 'dimgray');
@@ -184,15 +208,85 @@
 
       stream.center = [fx-18, fy-23, 0];
 
-      const topOfBodyY = bodyCenterY + bodyH;
-      const vy = topOfBodyY + 0.7;
+      const vy = bodyCenterY + bodyH + 1;
 
-      valveHub.center = [fx, vy, 0];
+      valveHub.center = [fx, vy-1, 0];
       valveBar1.center = [fx, vy, 0];
       valveBar2.center = [fx, vy, 0];
       valveHitBox.center = [fx, vy, 0];
     }
 
+    // ---------------------------
+    // Drain valve
+    // ---------------------------
+    function buildDrain() {
+      const dx = -L/2 - 4;
+      const dy = wallT + 1;
+      const dz = 0;
+
+      drainBody = S.cylinder([dx, dy, dz], [4, 8, 4], 'silver');
+
+      drainSpout = S.cylinder([dx + 7, dy, dz], [3, 14, 3], 'silver');
+      drainSpout.spinS = 90;
+
+      drainStream = S.cylinder([dx - 7, dy - 16, dz], [1.0, 16, 1.0], 'deepskyblue');
+      drainStream.visible = false;
+
+      const vx = dx;
+      const vy = dy + 7.5;
+      const vz = dz;
+
+      drainHub  = S.cylinder([vx, vy, vz], [2.8, 2.0, 2.8], 'dimgray');
+      drainBar1 = S.cube([vx, vy, vz], [10, 1.2, 2.0], 'dimgray');
+      drainBar2 = S.cube([vx, vy, vz], [2.0, 1.2, 10], 'dimgray');
+
+      drainHitBox = S.cube([vx, vy, vz], [14, 8, 14], 'white');
+      drainHitBox.visible = false;
+
+      updateDrainVisual();
+      updateFlowFromDrain();
+
+      drainHub.addEventListener('pointerDown', onDrainDown);
+      drainBar1.addEventListener('pointerDown', onDrainDown);
+      drainBar2.addEventListener('pointerDown', onDrainDown);
+      drainHitBox.addEventListener('pointerDown', onDrainDown);
+    }
+
+    function updateDrainVisual() {
+      const wheelSpin = dtheta * 4;
+      drainHub.spinT  = wheelSpin;
+      drainBar1.spinT = wheelSpin;
+      drainBar2.spinT = wheelSpin;
+      drainHitBox.spinT = wheelSpin;
+    }
+
+    function updateFlowFromDrain() {
+      const x = (dtheta - DTHETA_MIN) / (DTHETA_MAX - DTHETA_MIN);
+      Qout = QoutMax * x * x;
+    }
+
+    function rebuildDrainPosition() {
+      const dx = -L/2 - 4;
+      const dy = wallT + 1;
+      const dz = 0;
+
+      drainBody.center = [dx, dy, dz];
+      drainSpout.center = [dx + 7, dy, dz];
+      drainStream.center = [dx - 7, dy - 16, dz];
+
+      const vx = dx;
+      const vy = dy + 7.5;
+      const vz = dz;
+
+      drainHub.center = [vx, vy, vz];
+      drainBar1.center = [vx, vy, vz];
+      drainBar2.center = [vx, vy, vz];
+      drainHitBox.center = [vx, vy, vz];
+    }
+
+    // ---------------------------
+    // Orbit
+    // ---------------------------
     function configureOrbit() {
       O.enablePan = false;
 
@@ -202,6 +296,9 @@
       }
     }
 
+    // ---------------------------
+    // Drag
+    // ---------------------------
     function onValveDown(event) {
       event.preventDefault?.();
       event.stopImmediatePropagation?.();
@@ -240,6 +337,44 @@
       window.removeEventListener('pointermove', onPointerMoveValve);
     }
 
+    function onDrainDown(event) {
+      event.preventDefault?.();
+      event.stopImmediatePropagation?.();
+      event.stopPropagation?.();
+
+      draggingDrain = true;
+      dActivePointerId = (event.pointerId !== undefined) ? event.pointerId : null;
+
+      dDragStartClientX = event.clientX;
+      dthetaAtDragStart = dtheta;
+
+      window.addEventListener('pointermove', onPointerMoveDrain, { passive: false });
+      window.addEventListener('pointerup', onPointerUpDrain, { passive: false, once: true });
+      window.addEventListener('pointercancel', onPointerUpDrain, { passive: false, once: true });
+    }
+
+    function onPointerMoveDrain(event) {
+      if (!draggingDrain) return;
+      if (dActivePointerId !== null && event.pointerId !== dActivePointerId) return;
+
+      event.preventDefault?.();
+
+      const dx = event.clientX - dDragStartClientX;
+      dtheta = clamp(dthetaAtDragStart + dx * 0.25, DTHETA_MIN, DTHETA_MAX);
+
+      updateDrainVisual();
+      updateFlowFromDrain();
+    }
+
+    function onPointerUpDrain(event) {
+      if (dActivePointerId !== null && event.pointerId !== dActivePointerId) return;
+
+      draggingDrain = false;
+      dActivePointerId = null;
+
+      window.removeEventListener('pointermove', onPointerMoveDrain);
+    }
+
     function onHandleDown(axis, event) {
       event.preventDefault?.();
       event.stopImmediatePropagation?.();
@@ -274,6 +409,7 @@
 
       buildHandles();
       rebuildFaucetPosition();
+      rebuildDrainPosition();
 
       const A = (L - 2*wallT) * (W - 2*wallT);
       const Vmax = A * (H - wallT);
@@ -286,6 +422,9 @@
       window.removeEventListener('pointermove', onHandleMove);
     }
 
+    // ---------------------------
+    //(onTime)
+    // ---------------------------
     function tick() {
       if (!running) return;
 
@@ -295,8 +434,32 @@
 
       dt = clamp(dt, 0, 0.1);
 
-      V += Q * dt;
+      const A = (L - 2*wallT) * (W - 2*wallT);
+      const Vmax = A * (H - wallT);
+
+      const canDrain = (V > 0.0001);
+      const effectiveQout = canDrain ? Qout : 0;
+
+      V += (Q - effectiveQout) * dt;
+      V = clamp(V, 0, Vmax);
+
+      drainStream.visible = (effectiveQout > 0.5);
+
       updateWaterFromVolume();
+
+      if (drainStream.visible) {
+        const open = (dtheta - DTHETA_MIN) / (DTHETA_MAX - DTHETA_MIN);
+        const pulse = 1 + 0.12 * Math.sin((nowMs / 1000) * 18);
+        const r = 0.6 + 1.0 * open;
+        drainStream.size = [r * pulse, 16, r];
+      }
+
+      if (stream.visible) {
+        const open = (theta - THETA_MIN) / (THETA_MAX - THETA_MIN);
+        const pulse = 1 + 0.12 * Math.sin((nowMs / 1000) * 18);
+        const r = 0.6 + 1.0 * open;
+        stream.size = [r * pulse, stream.size[1], r];
+      }
     }
 
     // ---------------------------
@@ -305,6 +468,7 @@
     buildPool();
     updateWaterFromVolume();
     buildFaucet();
+    buildDrain();
     buildHandles();
     configureOrbit();
   </script>
