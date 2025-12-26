@@ -72,6 +72,9 @@
 
     let floorObj, wallX1, wallX2, wallZ1, wallZ2, waterObj;
 
+    let streamTopY = 0;
+    let streamX = 0, streamZ = 0;
+
     let lastMs = performance.now();
 
     function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
@@ -159,6 +162,10 @@
       stream = S.cylinder([fx-18, fy-23, fz], [1.2, 30, 1.2], 'deepskyblue');
       stream.visible = false;
 
+      streamX = fx - 18;
+      streamZ = fz;
+      streamTopY = (fy + 6) - 1.0;
+
       const vx = fx;
       const vy = bodyCenterY + bodyH + 1;
       const vz = fz;
@@ -207,6 +214,10 @@
       faucetSpout.center = [fx-8, fy+6, 0];
 
       stream.center = [fx-18, fy-23, 0];
+
+      streamX = fx - 18;
+      streamZ = 0;
+      streamTopY = (fy + 6) - 1.0;
 
       const vy = bodyCenterY + bodyH + 1;
 
@@ -455,11 +466,22 @@
       }
 
       if (stream.visible) {
+        const timeS = nowMs / 1000;
+
         const open = (theta - THETA_MIN) / (THETA_MAX - THETA_MIN);
-        const pulse = 1 + 0.12 * Math.sin((nowMs / 1000) * 18);
+        const pulse = 1 + 0.12 * Math.sin(timeS * 18);
         const r = 0.6 + 1.0 * open;
-        stream.size = [r * pulse, stream.size[1], r];
+
+        let waterSurfaceY = (V > 0.0001) ? (waterObj.center[1] + waterObj.size[1] / 2) : wallT;
+        waterSurfaceY = Math.min(waterSurfaceY, streamTopY - 0.2);
+
+        let len = streamTopY - waterSurfaceY;
+        len = clamp(len, 0.2, 200);
+
+        stream.size = [r * pulse, len, r];
+        stream.center = [streamX, waterSurfaceY, streamZ];
       }
+
     }
 
     // ---------------------------
