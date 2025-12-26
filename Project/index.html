@@ -1,19 +1,235 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bg">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="style.css">
-    <title>Suica Pool Simulator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Suica Pool Simulator</title>
+
+  <script src="suica.js"></script>
+  <style>
+    body { margin: 0; }
+  </style>
 </head>
+
 <body>
+  <suica fullWindow id="S" ontime="tick">
+    <orbit id="O"></orbit>
+  </suica>
+
+  <script>
+    // ---------------------------
+    // 1) Pool Params
+    // ---------------------------
+    let L = 60;
+    let W = 35;
+    let H = 25;
+    const wallT = 1.2;
+
+    // ---------------------------
+    // 2) Filling Params
+    // ---------------------------
+    let V = 0;
+    let running = true;
     
 
+    let theta = 0;
+    const THETA_MIN = 0;
+    const THETA_MAX = 90;
+
+    const Qmax = 20000;
+    let Q = 0;
+
+    // Drag state
+    let draggingValve = false;
+    let dragStartClientX = 0;
+    let thetaAtDragStart = 0;
+    let activePointerId = null;
+
+    let faucetBody, faucetNeck, faucetSpout, stream;
+    let valveBar1, valveBar2, valveHub, valveHitBox; 
+
+    let floorObj, wallX1, wallX2, wallZ1, wallZ2, waterObj;
+
+    let lastT = null;
+
+    // Helpers
+    function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
+
+    // ---------------------------
+    // Pool
+    // ---------------------------
+    function buildPool() {
+      if (floorObj) {
+        floorObj.visible = false;
+        wallX1.visible = false; wallX2.visible = false;
+        wallZ1.visible = false; wallZ2.visible = false;
+        waterObj.visible = false;
+      }
+
+      floorObj = S.cube([0, wallT/2, 0], [L, wallT, W], 'gainsboro');
+
+      wallZ1 = S.cube([0, H/2,  (W/2 - wallT/2)], [L, H, wallT], 'lightgray');
+      wallZ2 = S.cube([0, H/2, -(W/2 - wallT/2)], [L, H, wallT], 'lightgray');
+
+      wallX1 = S.cube([ (L/2 - wallT/2), H/2, 0], [wallT, H, W], 'lightgray');
+      wallX2 = S.cube([-(L/2 - wallT/2), H/2, 0], [wallT, H, W], 'lightgray');
+
+      waterObj = S.cube([0, wallT + 0.05, 0], [L - 2*wallT, 0.1, W - 2*wallT], 'deepskyblue');
+    }
+
+    function updateWaterFromVolume() {
+      const A = (L - 2*wallT) * (W - 2*wallT);
+      const Vmax = A * (H - wallT);
+
+      if (!Number.isFinite(V)) V = 0;
+
+      V = clamp(V, 0, Vmax);
+
+      const h = V / A;
+      const waterH = Math.max(0.1, h);
+
+      waterObj.size = [L - 2*wallT, waterH, W - 2*wallT];
+      waterObj.center = [0, wallT + waterH/2, 0];
+    }
+
+    // ---------------------------
+    //Faucet
+    // ---------------------------
+    function buildFaucet() {
+      const fx = L/2 + 12;
+      const fy = H + 6;
+      const fz = 0;
+
+      faucetBody = S.cylinder([fx, fy-30, fz], [6, 45, 6], 'silver');
+
+      faucetNeck = S.cylinder([fx, fy+6, fz], [5, 12, 5], 'silver');
+      faucetNeck.spinS = 90;
+
+      faucetSpout = S.cylinder([fx-8, fy+6, fz], [3.2, 10, 3.2], 'silver');
+      faucetSpout.spinS = 90;
+
+      stream = S.cylinder([fx-18, fy-23, fz], [1.2, 30, 1.2], 'deepskyblue');
+      stream.visible = false;
+
+      const vx = fx;
+      const vy = fy + 13.5;
+      const vz = fz;
+
+      valveHub  = S.cylinder([vx, vy, vz], [3.2, 2.2, 3.2], 'dimgray');
+      valveBar1 = S.cube([vx, vy, vz], [12, 1.4, 2.2], 'dimgray');
+      valveBar2 = S.cube([vx, vy, vz], [2.2, 1.4, 12], 'dimgray');
+
+      valveHitBox = S.cube([vx, vy, vz], [16, 8, 16], 'white');
+      valveHitBox.alpha = 0.01;
+      valveHitBox.visible=false;
+
+      updateValveVisual();
+      updateFlowFromValve();
+    }
+
+    function updateValveVisual() {
+      const wheelSpin = theta * 4;
+      valveHub.spinT  = wheelSpin;
+      valveBar1.spinT = wheelSpin;
+      valveBar2.spinT = wheelSpin;
+      valveHitBox.spinT = wheelSpin;
+    }
+
+    function updateFlowFromValve() {
+      const x = (theta - THETA_MIN) / (THETA_MAX - THETA_MIN);
+      Q = Qmax * x * x;
+      stream.visible = (Q > 0.5);
+    }
+
+    // ---------------------------
+    // Orbit 
+    // ---------------------------
+    function configureOrbit() {
+      O.enablePan = false;
 
 
-    <script src="suica.js"></script>
+      if (window.THREE && THREE.MOUSE && O.mouseButtons) {
+        O.mouseButtons.LEFT  = THREE.MOUSE.PAN;
+        O.mouseButtons.RIGHT = THREE.MOUSE.ROTATE; 
+      }
+    }
 
-    <script src="script.js"></script>
+    // ---------------------------
+    // Drag
+    // ---------------------------
+    function onValveDown(event) {
+      event.preventDefault?.();
+      event.stopImmediatePropagation?.();
+      event.stopPropagation?.();
+
+      draggingValve = true;
+      activePointerId = (event.pointerId !== undefined) ? event.pointerId : null;
+
+      dragStartClientX = event.clientX;
+      thetaAtDragStart = theta;
+
+      window.addEventListener('pointermove', onPointerMoveWindow, { passive: false });
+      window.addEventListener('pointerup', onPointerUpWindow, { passive: false, once: true });
+      window.addEventListener('pointercancel', onPointerUpWindow, { passive: false, once: true });
+    }
+
+    function onPointerMoveWindow(event) {
+      if (!draggingValve) return;
+      if (activePointerId !== null && event.pointerId !== activePointerId) return;
+
+      event.preventDefault?.();
+
+      const dx = event.clientX - dragStartClientX;
+      theta = clamp(thetaAtDragStart + dx * 0.25, THETA_MIN, THETA_MAX);
+
+      updateValveVisual();
+      updateFlowFromValve();
+    }
+
+    function onPointerUpWindow(event) {
+      if (activePointerId !== null && event.pointerId !== activePointerId) return;
+
+      draggingValve = false;
+      activePointerId = null;
+
+      window.removeEventListener('pointermove', onPointerMoveWindow);
+    }
+
+    // ---------------------------
+    //(onTime)
+    // ---------------------------
+    function tick(t, dt) {
+      if (!running) return;
+
+      if (!Number.isFinite(dt)) {
+        if (lastT === null) { lastT = t; return; }
+        dt = t - lastT;
+        lastT = t;
+
+        if (dt > 5) dt = dt / 1000;
+      } else {
+        lastT = t;
+      }
+
+      dt = clamp(dt, 0, 0.1);
+
+      V += Q * dt;
+      updateWaterFromVolume();
+      console.log("theta:", theta, "Q:", Q);
+    }
+
+    // ---------------------------
+    // Start
+    // ---------------------------
+    buildPool();
+    updateWaterFromVolume();
+    buildFaucet();
+    configureOrbit();
+
+    valveHub.addEventListener('pointerDown', onValveDown);
+    valveBar1.addEventListener('pointerDown', onValveDown);
+    valveBar2.addEventListener('pointerDown', onValveDown);
+    valveHitBox.addEventListener('pointerDown', onValveDown);
+  </script>
 </body>
 </html>
