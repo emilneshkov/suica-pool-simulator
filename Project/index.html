@@ -278,12 +278,18 @@
       const h = (A > 0) ? (V / A) : 0;
       const fillPct = (Vmax > 0) ? (100 * V / Vmax) : 0;
 
-      if (UI.dims) UI.dims.textContent = `L=${fmt(L,1)}, W=${fmt(W,1)}, H=${fmt(H,1)}`;
-      if (UI.vol) UI.vol.textContent = `${fmt(V,1)} / ${fmt(Vmax,1)}`;
-      if (UI.level) UI.level.textContent = `${fmt(h,2)}`;
-      if (UI.fill) UI.fill.textContent = `${fmt(clamp(fillPct,0,100),1)}%`;
-      if (UI.qin) uiSafeSet(UI.qin, `${fmt(Q,1)} (Qmax=${fmt(Qmax,0)})`);
-      if (UI.qout) uiSafeSet(UI.qout, `${fmt(Qout,1)}`);
+    if (UI.dims) UI.dims.textContent = `L = ${fmt(L,1)} m, W = ${fmt(W,1)} m, H = ${fmt(H,1)} m`;
+
+    if (UI.vol) UI.vol.textContent = `${fmt(V,1)} L / ${fmt(Vmax,1)} L`;
+
+    if (UI.level) UI.level.textContent = `${fmt(h * 100,2)} cm`;
+
+    if (UI.fill) UI.fill.textContent = `${fmt(clamp(fillPct,0,100),1)} %`;
+
+    if (UI.qin) uiSafeSet(UI.qin, `${fmt(Q,1)} L/s (макс. ${fmt(Qmax,0)} L/s)`);
+
+    if (UI.qout) uiSafeSet(UI.qout, `${fmt(Qout,1)} L/s`);
+
     }
 
     function uiSafeSet(el, text) {

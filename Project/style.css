@@ -213,7 +213,7 @@ button:active{
 
 .stat{
   display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
+  grid-template-columns: 1.05fr 3fr;
   gap: 0.8em;
   align-items: baseline;
   padding: 0.55em 0.65em;
