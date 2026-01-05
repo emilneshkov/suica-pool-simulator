@@ -11,7 +11,7 @@
 <body>
   <div class="content">
   <h1>Басейн с вода</h1>
-  <h4>Интерактивен демонстрационен урок | Suica | 2025</h4>
+  <h4>Интерактивен урок |Емил Нешков | 2025</h4>
 
   <h2>I. Теория</h2>
 
@@ -146,7 +146,68 @@
       </p>
     </div>
   </div>
+</div>
 
+<div class="solutions">
+  <h2>V. Решения</h2>
+  <p>
+    Тази секция съдържа примерни решения и насоки. Попълвайте числата според избраните от вас размери и дебити.
+  </p>
+
+  <details open>
+    <summary><strong>Решение — Задача №1</strong></summary>
+    <p>
+      Цел: време до 50% и 90% от максималната височина.
+      Първо намираме целевите височини:
+      <em>h<sub>50</sub> = 0.5H</em>, <em>h<sub>90</sub> = 0.9H</em>.
+    </p>
+    <p>
+      Обемът при дадена височина е <em>V = L·W·h</em>.
+      Ако басейнът започва от <em>V(0)</em> и има само пълнене с дебит <em>Q</em>, тогава:
+    </p>
+    <p class="formula"><em>t = (V<sub>цел</sub> − V(0)) / Q</em></p>
+    <p>
+      Където <em>V<sub>цел</sub> = L·W·h<sub>цел</sub></em>.
+      За 50% и 90% заместваш съответно <em>h<sub>цел</sub></em>.
+    </p>
+  </details>
+
+  <details>
+    <summary><strong>Решение — Задача №2</strong></summary>
+    <p>
+      Височината се променя със скорост:
+    </p>
+    <p class="formula"><em>dh/dt = (Q − Q<sub>out</sub>) / (L·W)</em></p>
+    <p>
+      Извод: при еднакъв нетен дебит <em>(Q − Q<sub>out</sub>)</em>, по-голяма площ <em>L·W</em>
+      означава по-бавно покачване на нивото, а по-малка площ — по-бързо.
+    </p>
+  </details>
+
+  <details>
+    <summary><strong>Решение — Задача №3</strong></summary>
+    <p>
+      Търсим дебит <em>Q</em>, така че басейнът да се напълни за <em>t = 60s</em>.
+      При празен басейн: <em>V(0)=0</em>, целевият обем е <em>V = L·W·H</em>.
+    </p>
+    <p class="formula"><em>Q = (L·W·H) / 60</em></p>
+    <p>
+      Ако работиш в литри, увери се, че мерните единици са еднакви (m³ ↔ L).
+      <em>1 m³ = 1000 L</em>.
+    </p>
+  </details>
+
+  <details>
+    <summary><strong>Решение — Задача №4</strong></summary>
+    <p>
+      За да остане нивото приблизително постоянно, нетният дебит трябва да е близо до 0:
+    </p>
+    <p class="formula"><em>Q ≈ Q<sub>out</sub></em></p>
+    <p>
+      Практически: напълни до 50%, после плавно увеличавай <em>Q<sub>out</sub></em> докато
+      индикаторът за ниво спре да се променя значимо. Малки разлики водят до бавно покачване/спад.
+    </p>
+  </details>
 </div>
 
 
@@ -154,17 +215,13 @@
   <h4>2025</h4>
   
   <script>
-    // ---------------------------
-    // Pool Params
-    // ---------------------------
+    //--- Pool Params ---
     let L = 60;
     let W = 35;
     let H = 25;
     const wallT = 1.2;
 
-    // ---------------------------
-    // Filling Params
-    // ---------------------------
+    //--- Filling Params ---
     let V = 0;
     let running = true;
 
@@ -175,7 +232,7 @@
     let Qmax = 20000;
     let Q = 0;
 
-    // Drag state
+    //--- Drag state ---
     let draggingValve = false;
     let dragStartClientX = 0;
     let thetaAtDragStart = 0;
@@ -200,7 +257,7 @@
     let handleStartY = 0;
     let startL = 0, startW = 0, startH = 0;
 
-    // Objs
+    // --- Objs ----
     let faucetBody, faucetNeck, faucetSpout, stream;
     let valveBar1, valveBar2, valveHub, valveHitBox;
 
@@ -726,7 +783,6 @@
       updateStats(true);
     });
 </script>
-
 
 </body>
 </html>

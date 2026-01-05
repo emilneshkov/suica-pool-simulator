@@ -1,270 +1,351 @@
-:root{
-  --ocean-0:#e9f8ff;
-  --ocean-1:#cfefff;
-  --ocean-2:#8fd6ff;
-  --ocean-3:#2ea7ff;
+:root {
+  --ocean-0: #e9f8ff;
+  --ocean-1: #cfefff;
+  --ocean-2: #8fd6ff;
+  --ocean-3: #2ea7ff;
 
-  --pool-tile:#f6fbff;
-  --foam:#ffffff;
-  --deep:#0b4a6f;
+  --pool-tile: #f6fbff;
+  --foam: #ffffff;
+  --deep: #0b4a6f;
 
-  --line: rgba(12, 74, 110, .28);
-  --shadow: rgba(0, 76, 115, .18);
+  --line: rgba(12, 74, 110, 0.28);
+  --shadow: rgba(0, 76, 115, 0.18);
 
-  --accent:#0ea5e9;
-  --accent2:#22c55e; 
-  --warn:#f97316; 
-  --text:#083a56;
-  --muted: rgba(8, 58, 86, .72);
+  --accent: #0ea5e9;
+  --accent2: #22c55e;
+  --warn: #f97316;
+  --text: #083a56;
+  --muted: rgba(8, 58, 86, 0.72);
 }
 
-body{
+/* =========================
+   Base
+========================= */
+
+body {
   margin: 0;
-  background:
-    radial-gradient(1200px 600px at 50% -100px, var(--ocean-2) 0%, var(--ocean-1) 35%, var(--ocean-0) 70%, #ffffff 100%);
   text-align: center;
   font-family: Candara, system-ui, -apple-system, Segoe UI, sans-serif;
   color: var(--text);
+  background: radial-gradient(
+    1200px 600px at 50% -100px,
+    var(--ocean-2) 0%,
+    var(--ocean-1) 35%,
+    var(--ocean-0) 70%,
+    #ffffff 100%
+  );
 }
 
-.content{
-  width: 600px;
+.content {
+  max-width: 600px;
+  width: min(600px, 92vw);
   margin: 0 auto;
   padding: 18px 0;
 }
 
 
-h1{
+/* =========================
+   Typography
+========================= */
+
+h1 {
   font-size: 3em;
   margin-bottom: 0;
-  text-shadow: 0 0 10px rgba(46, 167, 255, .35);
   letter-spacing: 0.02em;
+  text-shadow: 0 0 10px rgba(46, 167, 255, 0.35);
 }
 
-h2{
+h2 {
   margin-top: 3em;
-  border-top: 1px dotted var(--line);
-  text-align: left;
   margin-bottom: 0;
-  text-shadow: 0 0 1px rgba(46, 167, 255, .35);
+  text-align: left;
+  border-top: 1px dotted var(--line);
+  text-shadow: 0 0 1px rgba(46, 167, 255, 0.35);
 }
 
-h3{
+h3 {
   font-size: 125%;
   font-style: italic;
   font-weight: normal;
+  text-align: left;
   margin: 1em 0 auto 0;
   padding-bottom: 0.35em;
-  border-bottom: 1px solid rgba(46, 167, 255, .35);
-  text-align: left;
-  color: rgba(8, 58, 86, .92);
+  border-bottom: 1px solid rgba(46, 167, 255, 0.35);
+  color: rgba(8, 58, 86, 0.92);
 }
 
-h4{
+h4 {
   font-weight: normal;
   color: var(--muted);
 }
 
-p{
+p {
   margin-top: 0.5em;
   text-align: justify;
   font-size: 1.1em;
-  color: rgba(8, 58, 86, .86);
+  color: rgba(8, 58, 86, 0.86);
 }
 
-suica{
-  display: block;
-  margin: 2em auto 0em auto;
-  border: 1px solid rgba(46, 167, 255, .45);
-  box-shadow: 0 18px 45px -22px var(--shadow), 0 0 0 1px rgba(255,255,255,.6) inset;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.9) 0%, rgba(246,251,255,.95) 45%, rgba(233,248,255,.92) 100%);
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-em{
+em {
   font-weight: bold;
   font-style: italic;
   color: var(--accent);
 }
 
-[formula]{
+[formula] {
   text-align: center;
   font-size: 150%;
-  color: rgba(8, 58, 86, .92);
+  color: rgba(8, 58, 86, 0.92);
 }
 
-ul, li{
+ul,
+li {
   text-align: justify;
   font-size: 110%;
-  color: rgba(8, 58, 86, .86);
+  color: rgba(8, 58, 86, 0.86);
 }
 
-hr{
+hr {
   border: 0;
-  border-top: 1px dotted var(--line);
   width: 300px;
+  border-top: 1px dotted var(--line);
 }
 
-.panel{
+/* =========================
+   Suica canvas
+========================= */
+
+suica {
+  display: block;
+  margin: 2em auto 0 auto;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(46, 167, 255, 0.45);
+  box-shadow: 0 18px 45px -22px var(--shadow), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(246, 251, 255, 0.95) 45%,
+    rgba(233, 248, 255, 0.92) 100%
+  );
+}
+
+/* =========================
+   Solutions
+========================= */
+
+.solutions {
+  max-width: 600px;
+  width: min(600px, 92vw);
+  margin: 20px auto;
+  padding: 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.solutions details {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.solutions summary {
+  cursor: pointer;
+}
+
+.solutions .formula {
+  font-size: 1.05rem;
+  margin: 10px 0;
+}
+
+/* =========================
+   Panels / Controls
+========================= */
+
+.panel {
   margin: 1.5em 0 0 0;
   text-align: left;
   padding: 12px;
 }
 
-.row{
+.row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1em;
 }
 
-.box{
-  border: 1px solid rgba(46, 167, 255, .38);
-  box-shadow: 0 14px 35px -26px var(--shadow), 0 0 0 1px rgba(255,255,255,.7) inset;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.92) 0%, rgba(246,251,255,.92) 55%, rgba(233,248,255,.86) 100%);
+.box {
   padding: 0.95em 1em 1em 1em;
   border-radius: 14px;
+  border: 1px solid rgba(46, 167, 255, 0.38);
+  box-shadow: 0 14px 35px -26px var(--shadow), 0 0 0 1px rgba(255, 255, 255, 0.7) inset;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(246, 251, 255, 0.92) 55%,
+    rgba(233, 248, 255, 0.86) 100%
+  );
 }
 
-.control{
-  margin: 0.9em 0 0.9em 0;
+.control {
+  margin: 0.9em 0;
 }
 
-label{
+label {
   display: block;
-  color: rgba(8, 58, 86, .9);
   margin: 0 0 0.35em 0;
   font-weight: 600;
+  color: rgba(8, 58, 86, 0.9);
 }
 
-label .unit{
-  font-weight: 400;
-  color: rgba(8, 58, 86, .62);
+label .unit {
   margin-left: 0.3em;
   font-size: 0.95em;
+  font-weight: 400;
+  color: rgba(8, 58, 86, 0.62);
 }
 
-
-input[type="range"]{
+input[type="range"] {
   width: 100%;
-  accent-color: var(--accent);
   cursor: pointer;
+  accent-color: var(--accent);
 }
 
-
-.buttons{
+.buttons {
   display: flex;
   gap: 0.5em;
   flex-wrap: wrap;
 }
 
-button{
+button {
   font-family: inherit;
-  border: 1px solid rgba(46, 167, 255, .55);
-  background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(233,248,255,.9));
-  color: rgba(8, 58, 86, .95);
+  cursor: pointer;
   padding: 0.45em 0.8em;
   border-radius: 10px;
-  cursor: pointer;
+  color: rgba(8, 58, 86, 0.95);
+  border: 1px solid rgba(46, 167, 255, 0.55);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(233, 248, 255, 0.9));
   box-shadow: 0 10px 24px -20px var(--shadow);
-  transition: transform .08s ease, filter .12s ease, box-shadow .12s ease;
+  transition: transform 0.08s ease, filter 0.12s ease, box-shadow 0.12s ease;
 }
 
-button:hover{
+button:hover {
   filter: brightness(1.02);
   box-shadow: 0 14px 30px -22px var(--shadow);
 }
 
-button:active{
+button:active {
   transform: translateY(1px);
 }
 
+/* =========================
+   Values / Stats
+========================= */
 
 .small,
-.value{
-  font-size: 0.98em;
-  color: rgba(8, 58, 86, .8);
-  margin-top: 0.35em;
+.value {
   display: flex;
   align-items: baseline;
   gap: 0.35em;
+  margin-top: 0.35em;
+  font-size: 0.98em;
+  color: rgba(8, 58, 86, 0.8);
 }
 
-.value{
+.value {
   font-weight: 600;
 }
 
-.value span{
+.value span {
   font-variant-numeric: tabular-nums;
 }
 
-
-.stats{
+.stats {
   display: grid;
   gap: 0.55em;
 }
 
-.stats .k{
-  color: rgba(8, 58, 86, .86);
+.stats .k {
   font-weight: 700;
+  color: rgba(8, 58, 86, 0.86);
 }
 
-.stat{
+.stat {
   display: grid;
   grid-template-columns: 1.05fr 3fr;
   gap: 0.8em;
   align-items: baseline;
   padding: 0.55em 0.65em;
-  background: rgba(255,255,255,.6);
-  border: 1px solid rgba(46, 167, 255, .22);
   border-radius: 12px;
+  border: 1px solid rgba(46, 167, 255, 0.22);
+  background: rgba(255, 255, 255, 0.6);
 }
 
-.stat .name{
-  color: rgba(8, 58, 86, .82);
+.stat .name {
   font-weight: 600;
+  color: rgba(8, 58, 86, 0.82);
 }
 
-.stat .value{
+.stat .value {
   text-align: right;
-  color: rgba(8, 58, 86, .95);
+  color: rgba(8, 58, 86, 0.95);
   font-variant-numeric: tabular-nums;
 }
 
+/* =========================
+   Hint
+========================= */
 
-.hint{
+.hint {
   margin-top: 0.9em;
-  font-size: 1.02em;
-  color: rgba(8, 58, 86, .78);
   padding: 0.75em 0.8em;
   border-radius: 12px;
-  background: rgba(143, 214, 255, .18);
-  border: 1px solid rgba(46, 167, 255, .26);
+  font-size: 1.02em;
+  color: rgba(8, 58, 86, 0.78);
+  border: 1px solid rgba(46, 167, 255, 0.26);
+  background: rgba(143, 214, 255, 0.18);
 }
 
-.hint strong{
-  color: rgba(8, 58, 86, .95);
+.hint strong {
+  color: rgba(8, 58, 86, 0.95);
 }
 
+/* =========================
+   Layout
+========================= */
 
-.sim-layout{
+.sim-layout {
   display: grid;
   grid-template-columns: 1fr 640px 1fr;
   gap: 24px;
   align-items: start;
 }
 
-.sim-layout suica{
-  border: 1px solid rgba(46, 167, 255, .45);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.9) 0%, rgba(246,251,255,.95) 45%, rgba(233,248,255,.92) 100%);
+.sim-layout suica {
+  border: 1px solid rgba(46, 167, 255, 0.45);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(246, 251, 255, 0.95) 45%,
+    rgba(233, 248, 255, 0.92) 100%
+  );
 }
 
+/* =========================
+   Responsive
+========================= */
 
-@media (max-width: 900px){
-  body{ width: min(600px, 92vw); }
-  .sim-layout{ grid-template-columns: 1fr; }
-  .row{ grid-template-columns: 1fr; }
+@media (max-width: 900px) {
+  body {
+    width: min(600px, 92vw);
+  }
+
+  .sim-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
 }

@@ -2,8 +2,7 @@
 
 **An interactive 3D educational simulation for learning how pools fill and drain in real time.**
 
-
-👉 [Live Demo – Suica Pool Simulator](https://electronicbg.github.io/suica-pool-simulator/Project/)
+👉 [Live Demo – Suica Pool Simulator](https://emilneshkov.github.io/suica-pool-simulator/Project/)
 
 🎓 Created as part of the course:
 
@@ -28,7 +27,3 @@ The simulation lets you:
   - Inflow and outflow rates
 
 The visualization is powered by the **Suica 3D JavaScript library**, allowing direct interaction with the 3D scene.
-
-
-
-
