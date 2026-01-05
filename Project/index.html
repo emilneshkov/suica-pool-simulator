@@ -28,6 +28,26 @@
   </p>
 
   <p>
+      Поради дебелината на стените и дъното, водата заема по-малък
+      <em>вътрешен</em> обем, който се използва във всички изчисления.
+      В нашата симулация дебелината е <em>wallT = 1.2 cm</em>.
+      Затова вътрешните размери са:
+      <em>L<sub>вътр</sub> = L − 2·wallT</em>,
+      <em>W<sub>вътр</sub> = W − 2·wallT</em>,
+      <em>H<sub>вътр</sub> = H − wallT</em>,
+      а максималният вътрешен обем е:
+  </p>
+
+  <p formula>
+    <em>V<sub>max</sub> = (L − 2·wallT) · (W − 2·wallT) · (H − wallT)</em>
+  </p>
+
+  <p>
+      Този обем определя колко вода реално може да се събере в басейна
+      (стените и дъното не се пълнят с вода).
+  </p>
+
+  <p>
     Когато през горния кран постъпва вода с дебит <em>Q</em> (литра за секунда),
     обемът на водата в басейна нараства равномерно. Ако в началния момент
     <em>t = 0</em> имаме обем <em>V(0)</em>, то след време <em>t</em> обемът е:
@@ -112,8 +132,8 @@
 
       <div class="control">
         <label>Максимален дебит <span class="unit">Qmax (L/s)</span></label>
-        <input id="qmax" type="range" min="0" max="30000" step="100" value="20000">
-        <div class="value"><span id="qmaxValue">20000</span> L/s</div>
+        <input id="qmax" type="range" min="0" max="500" step="10" value="500">
+        <div class="value"><span id="qmaxValue">500</span> L/s</div>
       </div>
 
       <div class="buttons">
@@ -142,7 +162,7 @@
       </div>
 
       <p class="hint">
-        По-голямо дъно ⇒ по-бавно покачване на нивото при същия дебит.
+        Показаният обем е вътрешният обем – стените и дъното не се пълнят с вода.
       </p>
     </div>
   </div>
@@ -152,22 +172,28 @@
   <h2>V. Решения</h2>
   <p>
     Тази секция съдържа примерни решения и насоки. Попълвайте числата според избраните от вас размери и дебити.
+    <br>
+    В симулатора смятаме с <em>вътрешните</em> размери , т.е.:
+    <br>
+    <em>L<sub>вътр</sub> = L − 2·wallT</em>, <em>W<sub>вътр</sub> = W − 2·wallT</em>, <em>H<sub>вътр</sub> = H − wallT</em>.
+    Тук <em>wallT = 1.2 cm</em>.
   </p>
 
   <details open>
     <summary><strong>Решение — Задача №1</strong></summary>
     <p>
-      Цел: време до 50% и 90% от максималната височина.
-      Първо намираме целевите височини:
-      <em>h<sub>50</sub> = 0.5H</em>, <em>h<sub>90</sub> = 0.9H</em>.
+      Цел: време до 50% и 90% от максималната височина на водата.
+      Първо намираме целевите височини спрямо вътрешната височина:
+      <em>h<sub>50</sub> = 0.5·H<sub>вътр</sub></em>, <em>h<sub>90</sub> = 0.9·H<sub>вътр</sub></em>.
     </p>
     <p>
-      Обемът при дадена височина е <em>V = L·W·h</em>.
+      Вътрешната площ на дъното е <em>A = L<sub>вътр</sub> · W<sub>вътр</sub></em>,
+      а обемът при дадена височина е <em>V = A · h</em>.
       Ако басейнът започва от <em>V(0)</em> и има само пълнене с дебит <em>Q</em>, тогава:
     </p>
     <p class="formula"><em>t = (V<sub>цел</sub> − V(0)) / Q</em></p>
     <p>
-      Където <em>V<sub>цел</sub> = L·W·h<sub>цел</sub></em>.
+      Където <em>V<sub>цел</sub> = A · h<sub>цел</sub></em>.
       За 50% и 90% заместваш съответно <em>h<sub>цел</sub></em>.
     </p>
   </details>
@@ -177,9 +203,10 @@
     <p>
       Височината се променя със скорост:
     </p>
-    <p class="formula"><em>dh/dt = (Q − Q<sub>out</sub>) / (L·W)</em></p>
+    <p class="formula"><em>dh/dt = (Q − Q<sub>out</sub>) / A</em></p>
     <p>
-      Извод: при еднакъв нетен дебит <em>(Q − Q<sub>out</sub>)</em>, по-голяма площ <em>L·W</em>
+      Където <em>A = L<sub>вътр</sub> · W<sub>вътр</sub></em>.
+      Извод: при еднакъв нетен дебит <em>(Q − Q<sub>out</sub>)</em>, по-голяма вътрешна площ
       означава по-бавно покачване на нивото, а по-малка площ — по-бързо.
     </p>
   </details>
@@ -187,13 +214,15 @@
   <details>
     <summary><strong>Решение — Задача №3</strong></summary>
     <p>
-      Търсим дебит <em>Q</em>, така че басейнът да се напълни за <em>t = 60s</em>.
-      При празен басейн: <em>V(0)=0</em>, целевият обем е <em>V = L·W·H</em>.
+      Търсим дебит <em>Q</em>, така че басейнът да се напълни за <em>t = 60 s</em>.
+      При празен басейн: <em>V(0)=0</em>, целевият обем е максималният вътрешен обем:
+      <em>V<sub>max</sub> = L<sub>вътр</sub> · W<sub>вътр</sub> · H<sub>вътр</sub></em>.
     </p>
-    <p class="formula"><em>Q = (L·W·H) / 60</em></p>
+    <p class="formula"><em>Q = V<sub>max</sub> / 60</em></p>
     <p>
-      Ако работиш в литри, увери се, че мерните единици са еднакви (m³ ↔ L).
-      <em>1 m³ = 1000 L</em>.
+      Ако работиш в литри, увери се, че мерните единици са еднакви.
+      При размери в сантиметри: <em>1 L = 1000 cm³</em>.
+      (Тоест първо намираш <em>V<sub>max</sub></em> в <em>cm³</em> и делиш на 1000, за да получиш литри.)
     </p>
   </details>
 
@@ -229,7 +258,7 @@
     const THETA_MIN = 0;
     const THETA_MAX = 90;
 
-    let Qmax = 20000;
+    let Qmax = 500;
     let Q = 0;
 
     //--- Drag state ---
@@ -242,7 +271,7 @@
     let dtheta = 0;
     const DTHETA_MIN = 0;
     const DTHETA_MAX = 90;
-    const QoutMax = 20000;
+    const QoutMax = 500;
     let Qout = 0;
 
     let draggingDrain = false;
@@ -282,6 +311,23 @@
     };
 
     // ---------------------------
+    // Units helpers
+    // ---------------------------
+    function innerAreaCm2() {
+      return (L - 2 * wallT) * (W - 2 * wallT);
+    }
+    function maxVolumeL() {
+      const A = innerAreaCm2();
+      const Vcm3 = A * (H - wallT);
+      return (Vcm3 > 0) ? (Vcm3 / 1000) : 0;
+    }
+    function waterHeightCmFromLiters(vL) {
+      const A = innerAreaCm2();
+      if (A <= 0) return 0;
+        return (vL * 1000) / A;
+    }
+
+    // ---------------------------
     // Scene ready flag 
     // ---------------------------
     let sceneReady = false;
@@ -309,8 +355,11 @@
       UI.qout = document.getElementById('qout');
 
       if (UI.qmax) {
-        Qmax = Number(UI.qmax.value) || Qmax;
-        if (UI.qmaxValue) UI.qmaxValue.textContent = String(Qmax);
+        const v0 = Number(UI.qmax.value);
+        if (!Number.isNaN(v0)) Qmax = v0;
+
+      UI.qmax.value = String(Qmax);
+      if (UI.qmaxValue) UI.qmaxValue.textContent = String(Qmax);
 
         UI.qmax.addEventListener('input', () => {
           Qmax = Number(UI.qmax.value) || 0;
@@ -330,23 +379,22 @@
       if (!force && now - UI.lastUpdateMs < 100) return;
       UI.lastUpdateMs = now;
 
-      const A = (L - 2*wallT) * (W - 2*wallT);
-      const Vmax = A * (H - wallT);
-      const h = (A > 0) ? (V / A) : 0;
+      const A = innerAreaCm2();
+      const Vmax = maxVolumeL();
+      const hCm = (A > 0) ? waterHeightCmFromLiters(V) : 0;
       const fillPct = (Vmax > 0) ? (100 * V / Vmax) : 0;
 
-    if (UI.dims) UI.dims.textContent = `L = ${fmt(L,1)} m, W = ${fmt(W,1)} m, H = ${fmt(H,1)} m`;
 
-    if (UI.vol) UI.vol.textContent = `${fmt(V,1)} L / ${fmt(Vmax,1)} L`;
+      if (UI.dims) UI.dims.textContent = `L = ${fmt(L,1)} cm, W = ${fmt(W,1)} cm, H = ${fmt(H,1)} cm`;
 
-    if (UI.level) UI.level.textContent = `${fmt(h * 100,2)} cm`;
+      if (UI.vol) UI.vol.textContent = `${fmt(V,1)} L / ${fmt(Vmax,1)} L`;
 
-    if (UI.fill) UI.fill.textContent = `${fmt(clamp(fillPct,0,100),1)} %`;
+      if (UI.level) UI.level.textContent = `${fmt(hCm,2)} cm`;
 
-    if (UI.qin) uiSafeSet(UI.qin, `${fmt(Q,1)} L/s (макс. ${fmt(Qmax,0)} L/s)`);
+      if (UI.fill) UI.fill.textContent = `${fmt(clamp(fillPct,0,100),1)} %`;
 
-    if (UI.qout) uiSafeSet(UI.qout, `${fmt(Qout,1)} L/s`);
-
+      if (UI.qin) uiSafeSet(UI.qin, `${fmt(Q,1)} L/s (макс. ${fmt(Qmax,0)} L/s)`);
+      if (UI.qout) uiSafeSet(UI.qout, `${fmt(Qout,1)} L/s`);
     }
 
     function uiSafeSet(el, text) {
@@ -376,25 +424,22 @@
     }
 
     function updateWaterFromVolume() {
-      const A = (L - 2*wallT) * (W - 2*wallT);
-      const Vmax = A * (H - wallT);
+      const Vmax = maxVolumeL();
 
       if (!Number.isFinite(V)) V = 0;
-
       V = clamp(V, 0, Vmax);
 
-      const h = V / A;
+      const waterHcm = waterHeightCmFromLiters(V);
+
       if (V <= 0.0001) {
         if (waterObj) waterObj.visible = false;
-        return;
+          return;
       }
-
       if (waterObj) waterObj.visible = true;
 
-      const waterH = h;
       if (waterObj) {
-        waterObj.size = [L - 2*wallT, waterH, W - 2*wallT];
-        waterObj.center = [0, wallT + waterH/2, 0];
+        waterObj.size = [L - 2*wallT, waterHcm, W - 2*wallT];
+        waterObj.center = [0, wallT + waterHcm/2, 0];
       }
     }
 
